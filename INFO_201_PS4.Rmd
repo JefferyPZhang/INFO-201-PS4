@@ -1,0 +1,290 @@
+---
+title: "PS4"
+author: "Jeffery Zhang"
+class: "INFO 201"
+TA: "Xinyu Chang (AD)"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ---------- 1: Working Directory ----------
+
+# 1.1
+The working directory of the RStudio console is at C:/Users/xuz-t/OneDrive/Documents/INFO_201_Scripts.
+
+# 1.2
+
+The .rmd is saved to C:/Users/xuz-t/OneDrive/Documents/INFO_201_Scripts.
+
+# 1.3
+They are the same. This matters because it helps streamline file access.
+
+## ---------- 2: Create Your Own Data ----------
+
+# 2.1
+```{r name_vector}
+names <- c("Allan", "Bill", "Charlie", "David", "Ethan")
+print(names)
+```
+
+This is a vector of five students.
+
+# 2.2
+```{r math_sample}
+math <- sample(100, 5, replace = TRUE)
+print(math)
+```
+
+Random sample of math grades, from 0-100.
+
+# 2.3
+```{r japanese_sample}
+japanese <- sample(100, 5, replace = TRUE)
+print(japanese)
+```
+
+Random sample of japanese grades, from 0-100.
+
+# 2.4
+```{r dance_sample}
+dance <- sample(100, 5, replace = TRUE)
+print(dance)
+```
+
+Random sample of dance grades, from 0-100.
+
+# 2.5
+```{r grades_dataframe}
+grades <- data.frame(Name = names, Math = math, Japanese = japanese, Dance = dance)
+print(grades)
+```
+
+This is the representative dataframe, constructed out of names and the grades from math, japanese, and dance.
+
+# 2.6
+```{r num_students}
+num_students <- nrow(grades)
+cat(num_students)
+```
+
+This is the number of students, or the number of rows in the dataframe.
+
+# 2.7
+```{r num_courses}
+num_courses <- ncol(grades) - 1
+cat(num_courses)
+```
+
+This is the number of courses, or the number of columns (minus 1) in the dataframe.
+
+# 2.8
+```{r last_two_rows}
+last_two_rows <- tail(grades, 2)
+print(last_two_rows)
+```
+
+This is the last two rows of the dataframe.
+
+# 2.9
+```{r create_csv}
+library(readr)
+data_directory <- "data/"
+file_path <- file.path(data_directory, "grades.csv")
+write_csv(grades, file_path)
+```
+
+This code writes the .csv file to the given filepath.
+
+# 2.10
+```{r confirm}
+list.files(data_directory)
+```
+
+This is a confirmation that the .csv file does, in fact, exist.
+
+## ---------- 3: Indirect Variable Names ----------
+
+# 3.1
+```{r indirect_dance}
+col <- "Dance"
+cat(col)
+```
+
+This creates an indirect reference to the dance column within the dataframe.
+
+# 3.2
+```{r use_indirect}
+grades_list <- grades[, col]
+cat("grades: ", grades_list)
+```
+
+This is how we access grades for the dance class without explicitly using "dance".
+
+# 3.3
+```{r indirect_japanese}
+col <- "Japanese"
+best_grade <- max(grades[, col])
+cat("Best grade in ", col, ": ", best_grade)
+```
+
+This is how we indirectly find the best grade for the japanese class without explicitly using "japanese".
+
+# 3.4
+```{r average_grade}
+for (name in names(grades)) {
+  avg_value <- mean(grades[[name]])
+  if (!is.na(avg_value)) {
+    cat("class ", name, "has an average grade of ", avg_value, "\n") 
+  }
+}
+```
+
+These are all the average grades per class.
+
+## ---------- 4: Data manipulations ----------
+
+# 4.1
+```{r GPA}
+grades$gpa <- (1/3) * (grades$Math + grades$Japanese + grades$Dance)
+gpa_data <- grades[["gpa"]]
+print(gpa_data)
+```
+
+These are the (pseudo-) GPAs of each student, based on their average grade.
+
+# 4.2
+```{r best_student}
+best_student_index <- which.max(grades$gpa)
+best_student_data <- grades[best_student_index, ]
+print(best_student_data)
+```
+
+This is the best student, based on their GPA.
+
+# 4.3
+```{r best_student_name}
+best_student_name <- best_student_data$Name
+cat(best_student_name)
+```
+
+This is the name of the best student.
+
+# 4.4
+```{print_data}
+print(grades)
+```
+
+Yes, it is right.
+
+# 4.5
+```{r is_better_at_math}
+grades$better_at_math <- grades$Math > grades$Japanese
+print(head(grades, 3))
+```
+
+These are the first three lines, representing whether or not the student is better at math than in Japanese.
+
+# 4.6
+```{r how_many_better}
+num_students_better_math <- sum(grades$better_at_math)
+cat(num_students_better_math)
+```
+
+This is the number of students who are better at math than at Japanese.
+
+## ---------- 5: Life expectancy ----------
+
+## ---------- 5.1: Load Data ----------
+
+# 5.1.1
+```{r createDataframe}
+life_expectancies <- read_delim("C:/Users/xuz-t/Documents/INFO_201/PS4/data/life-expectancy.csv")
+```
+
+This is RStudio reading the life-expectancy file, with the Tab separator.
+
+# 5.1.2
+```{r dataframe_dimens}
+num_row <- nrow(life_expectancies)
+num_col <- ncol(life_expectancies)
+cat(num_row)
+cat(num_col)
+```
+
+These are the number of rows and columns in the life expectancy data, respectively.
+
+# 5.1.3
+```{r var_names}
+cat(names(life_expectancies))
+```
+
+These are all the variable names within the life_expectancy dataframe.
+
+# 5.1.4
+```{r first_five_lines}
+head(life_expectancies, 5)
+```
+
+These are the first five lines of the life_expectancy dataframe. It generally looks pretty good, but there are a couple of NA entries.
+
+# 5.1.5
+Each row in the data set represents a country entry.
+
+# 5.1.6
+```{r num_missing_per_var}
+missing <- numeric(length(life_expectancies))
+for (i in 1 : num_col) {
+  missing[i] <- sum(is.na(life_expectancies[[i]]))
+  cat("var name: ", names(life_expectancies)[i], "missing vals:", missing[i], "\n")
+}
+```
+
+These are the number of entries missing per variable. There are a couple of missing life expectancy values, but definitely the variables with the most missing are the GDP per capita values.
+
+## ---------- 5.2: Analyze Data ----------
+
+# 5.2.1
+```{r life_expectancy_growth}
+life_expectancies$expectancy_growth <- life_expectancies$le2019 - life_expectancies$le1960
+head(life_expectancies, 5)
+```
+
+This code creates a new variable which shows the growth in life expectancy per country.
+
+# 5.2.2
+```{r average_improvement}
+average_improvement <- mean(life_expectancies$expectancy_growth, na.rm = TRUE)
+cat(average_improvement)
+```
+
+This is the average improvement in life_expectancy for every country.
+
+# 5.2.3
+```{r min_max_gains_countries}
+max_gain_country <- life_expectancies[which.max(life_expectancies$expectancy_growth), "name"]
+min_gain_country <- life_expectancies[which.min(life_expectancies$expectancy_growth), "name"]
+print(max_gain_country)
+print(min_gain_country)
+```
+
+These are the countries that gained the most/least life expectancy within the same timeframe.
+
+# 5.2.4
+```{r countries_less_than_five}
+countries_less_than_5_years <- sum(life_expectancies$expectancy_growth < 5, na.rm = TRUE)
+cat(countries_less_than_5_years)
+```
+
+This is the number of countries that gained less than 5 years of life expectancy over the timeframe.
+
+# 5.2.5
+```{r countries_decreased}
+countries_with_decreased_LE <- sum(life_expectancies$expectancy_growth < 0, na.rm = TRUE)
+cat(countries_with_decreased_LE)
+```
+
+This is the number of countries that saw decreases in life expectancy during the timeframe.
